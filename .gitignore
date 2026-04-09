@@ -3,4 +3,6 @@ __pycache__/
 *.pyc
 .env
 .idea/
-.alembic_cache/
+.vscode/
+db.sqlite3
+site/

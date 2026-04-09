@@ -1,17 +1,15 @@
-# Welcome to MkDocs
+# Travel Buddy API
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Веб-сервис для поиска попутчиков и организации поездок.
 
-## Commands
+Проект реализован с использованием FastAPI, PostgreSQL и SQLAlchemy.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Основные возможности:
+- регистрация и авторизация пользователей
+- создание поездок
+- добавление маршрутов
+- управление участниками поездок
+- поиск поездок
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## Главная страница API
+![Main](img/main.png)

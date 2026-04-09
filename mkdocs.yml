@@ -1,1 +1,13 @@
-site_name: My Docs
+site_name: Travel Buddy API
+
+nav:
+  - Главная: index.md
+  - Описание проекта: description.md
+  - База данных: database.md
+  - API: api.md
+  - Авторизация: auth.md
+  - Тестирование: testing.md
+  - Заключение: conclusion.md
+
+theme:
+  name: material

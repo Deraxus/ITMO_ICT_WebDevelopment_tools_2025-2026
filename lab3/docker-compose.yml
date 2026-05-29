@@ -1,0 +1,91 @@
+services:
+  db:
+    image: postgres:16
+    container_name: travel_buddy_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: travel_buddy_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d travel_buddy_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: travel_buddy_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travel_buddy_api
+    restart: unless-stopped
+    env_file:
+      - .env.example
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      parser_service:
+        condition: service_started
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  parser_service:
+    build:
+      context: .
+      dockerfile: parser.Dockerfile
+    container_name: travel_buddy_parser
+    restart: unless-stopped
+    env_file:
+      - .env.example
+    ports:
+      - "8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travel_buddy_celery_worker
+    restart: unless-stopped
+    env_file:
+      - .env.example
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: celery -A app.celery_app.celery_app worker --loglevel=info
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travel_buddy_celery_beat
+    restart: unless-stopped
+    env_file:
+      - .env.example
+    depends_on:
+      redis:
+        condition: service_started
+      celery_worker:
+        condition: service_started
+    command: celery -A app.celery_app.celery_app beat --loglevel=info
+
+volumes:
+  postgres_data:
